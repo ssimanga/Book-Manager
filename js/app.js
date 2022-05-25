@@ -4,8 +4,8 @@ function Book(author, email, title, publisher, pdate, isbn){
     this.email = email,
     this.title = title,
     this.publisher = publisher,
-    pdate = pdate,
-    isbn = isbn
+    this.pdate = pdate,
+    this.isbn = isbn
 }
 
 //User Interface constructor
@@ -28,6 +28,40 @@ UI.prototype.addBook = function(book){
     table.appendChild(row);
 }
 
+//Method for the alerts
+UI.prototype.Toasts = function(msg, className){
+    //create a div
+    const div = document.createElement('div');
+    //add a class to the div
+    div.className = `alert ${className}`;
+    //add text
+    div.appendChild(document.createTextNode(msg));
+    //get the parent
+    const container = document.querySelector('.container');
+    //get the form
+    const form = document.querySelector('#book-form');
+    container.insertBefore(div, form);
+    //set timeout function
+    setTimeout(()=>{
+        document.querySelector('.alert').remove();
+    },3000);
+}
+//method to clear the fields
+UI.prototype.clearFields = function(){
+    document.querySelector('#author').value = '';
+    document.querySelector('#email').value ='';
+    document.querySelector('#title').value = '';
+    document.querySelector('#publisher').value = '';
+    document.querySelector('#pdate').value = '';
+    document.querySelector('#isbn').value = '';
+}
+//delete the book from the table
+UI.prototype.deleteBook =function(target){
+    if(target.className === 'del'){
+        target.parentElement.parentElement.remove()
+    }
+    
+}
 //Event listeners
 const form = document.querySelector('#book-form');
 form.addEventListener('submit',(e)=>{
@@ -38,12 +72,21 @@ form.addEventListener('submit',(e)=>{
     const publisher = document.querySelector('#publisher').value;
     const pdate = document.querySelector('#pdate').value;
     const isbn = document.querySelector('#isbn').value;
+
+    
     //create an object of the book contructor / class
     const book = new Book(author, email, title, publisher, pdate, isbn);
     // console.log(book);
-    //create and objcte of the undefined
+    //create and object of the thge user Interface
     const ui = new UI();
-    ui.addBook(book);
+    if(author === '' || email === '' || title === ''|| publisher ===''|| isbn===''){
+       ui.Toasts('Please fill in all the required fields', 'alert-danger')
+    }else{
+        ui.addBook(book);
+        ui.Toasts('Book saved successfully', 'alert-success');
+        ui.clearFields();
+    }
+    
 
     e.preventDefault();
 })
