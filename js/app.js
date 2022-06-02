@@ -62,6 +62,26 @@ UI.prototype.deleteBook =function(target){
     }
     
 }
+
+//Local storage constructorr / class
+function Store(){}
+//Method to get the book from the localstorage
+Store.prototype.getBooks = function(){
+    let books;
+    //check if we have any books stored in the localStorage
+    if(localStorage.getItem('books')=== null)
+        books = [];
+    else
+        books = JSON.parse(localStorage.getItem('books'));
+    return books;
+}
+
+//Method to add the book
+Store.prototype.addBook = function(book){
+    const books = this.getBooks();
+    books.push(book);
+    localStorage.setItem('books', JSON.stringify(books));
+}
 //Event listeners
 const form = document.querySelector('#book-form');
 form.addEventListener('submit',(e)=>{
@@ -77,16 +97,26 @@ form.addEventListener('submit',(e)=>{
     //create an object of the book contructor / class
     const book = new Book(author, email, title, publisher, pdate, isbn);
     // console.log(book);
-    //create and object of the thge user Interface
+    //create and object of the thge user Interface & LocalStorage
     const ui = new UI();
+    const ls = new Store();
     if(author === '' || email === '' || title === ''|| publisher ===''|| isbn===''){
        ui.Toasts('Please fill in all the required fields', 'alert-danger')
     }else{
         ui.addBook(book);
+        ls.addBook(book);
         ui.Toasts('Book saved successfully', 'alert-success');
         ui.clearFields();
     }
     
 
     e.preventDefault();
+})
+
+//Event listernere for the table
+document.querySelector('.book-list').addEventListener('click', (e)=>{
+    const ui = new UI();
+    ui.deleteBook(e.target);
+    ui.Toasts('Book has been deleted', 'alert-info');
+    e.preventDefault()
 })
