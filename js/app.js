@@ -63,6 +63,9 @@ UI.prototype.deleteBook =function(target){
     
 }
 
+//Inheritance 
+Store.prototype = Object.create(UI.prototype);
+Store.prototype.constructor = Store;
 //Local storage constructorr / class
 function Store(){}
 //Method to get the book from the localstorage
@@ -82,6 +85,27 @@ Store.prototype.addBook = function(book){
     books.push(book);
     localStorage.setItem('books', JSON.stringify(books));
 }
+//get the books from the localStorage and print them in the table
+Store.prototype.Data = function(){
+    const books = this.getBooks();
+    books.forEach(function(book){
+        let ui = new UI();
+        ui.addBook(book);
+    })
+}
+
+//Method to remove the book from the localStorage
+Store.prototype.removeBook = function(id){
+    const books = this.getBooks();
+    books.forEach((book, index)=>{
+        if(book.isbn === id){
+            books.splice(index, 1);
+        }
+    });
+    localStorage.setItem('books', JSON.stringify(books));
+}
+let s = new Store();
+s.Data();
 //Event listeners
 const form = document.querySelector('#book-form');
 form.addEventListener('submit',(e)=>{
@@ -116,7 +140,9 @@ form.addEventListener('submit',(e)=>{
 //Event listernere for the table
 document.querySelector('.book-list').addEventListener('click', (e)=>{
     const ui = new UI();
+    const ls = new Store();
     ui.deleteBook(e.target);
+    ls.removeBook(e.target.parentElement.previousElementSibling.textContent);
     ui.Toasts('Book has been deleted', 'alert-info');
     e.preventDefault()
 })
